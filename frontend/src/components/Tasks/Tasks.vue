@@ -19,11 +19,26 @@ const priorityFilter = ref('All')
 const editingTask = ref(null)
 const queryClient = useQueryClient();
 const taskStore = useTaskStore();
-const { data, isLoading, isError, error } = useQuery({
+
+interface Task {
+  _id: string
+  title: string
+  description?: string
+  status: 'To Do' | 'In Progress' | 'Done'
+  priority: 'Low' | 'Medium' | 'High'
+  due_date: string
+}
+type Status = 'To Do' | 'In Progress' | 'Done'
+
+interface StatusUpdatePayload {
+  id: string
+  status: Status
+}
+const { data, isLoading, isError, error } = useQuery<Task[]>({
   queryKey: ['tasks'],
-  queryFn: () => getData('/tasks'),
+queryFn: () => getData<Task[]>('/tasks'),
 })
- const tasksList = data || [];
+ const tasksList = computed(() => data ?? [])
  const filteredTasks = computed(() => {
   return tasksList.value.filter(t => {
     const matchesSearch =
@@ -52,36 +67,32 @@ const { data, isLoading, isError, error } = useQuery({
         }
     });
 
- const statusUpdateMutation = useMutation({
-        mutationFn: ({ id, status }) => patchData(`/tasks/${id}`, { status }),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['tasks'] });
-            toast.success('Task status updated');
-        },
-        onError: (err) => {
-            toast.error(err?.response?.data?.message || 'Failed to update status');
-        }
-    });
+const statusUpdateMutation = useMutation<
+  unknown,
+  AxiosError<ApiError>,
+  StatusUpdatePayload
+>({
+  mutationFn: ({ id, status }) =>
+    patchData(`/tasks/${id}`, { status }),
 
-  const handleStatusChange = (id, newStatus) => {
-        statusUpdateMutation.mutate({ id, status: newStatus });
-    };
-
-  const handleDelete = (id) => {
-    if (window.confirm('Are you sure you want to delete this task?')) {
-            deleteMutation.mutate(id);
-        }
-  }
-  const openEditModal = (task) => {
-  editingTask.value = task
-  taskStore.setIsEdit(true)
-  taskStore.setIsTaskModalOpen(true)
-}
+  onError: (err) => {
+    toast.error(
+      err.response?.data?.message || 'Failed to update status'
+    )
+  },
+})
 
 const openCreateModal = () => {
   editingTask.value = null
   taskStore.setIsEdit(false)
   taskStore.setIsTaskModalOpen(true)
+}
+
+const handleStatusChange = (id: string, newStatus: Status) => {
+  statusUpdateMutation.mutate({
+    id,
+    status: newStatus,
+  })
 }
 
 </script>
