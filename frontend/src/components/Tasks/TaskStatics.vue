@@ -1,5 +1,4 @@
-```vue
-<script setup lang="ts">
+<script setup>
 import { computed } from 'vue'
 import {
   CheckCircle2,
@@ -8,13 +7,12 @@ import {
   PlayCircle,
 } from 'lucide-vue-next'
 
-interface Task {
-  status: 'To Do' | 'In Progress' | 'Done'
-}
-
-const props = defineProps<{
-  tasksList: Task[]
-}>()
+const props = defineProps({
+  tasksList: {
+    type: Array,
+    default: () => [],
+  },
+})
 
 const totalCount = computed(() => props.tasksList.length)
 
@@ -66,7 +64,6 @@ const doneCount = computed(
       </p>
     </div>
 
-    <!-- In Progress -->
     <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200/80 dark:border-slate-800 shadow-sm">
       <div class="flex items-center justify-between">
         <span class="text-xs font-medium text-slate-500 dark:text-slate-400">
@@ -83,7 +80,6 @@ const doneCount = computed(
       </p>
     </div>
 
-    <!-- Completed -->
     <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200/80 dark:border-slate-800 shadow-sm">
       <div class="flex items-center justify-between">
         <span class="text-xs font-medium text-slate-500 dark:text-slate-400">
@@ -102,4 +98,3 @@ const doneCount = computed(
 
   </div>
 </template>
-```

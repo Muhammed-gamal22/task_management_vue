@@ -1,33 +1,39 @@
-
-<script setup lang="ts">
+<script setup>
 import { ref, computed } from 'vue'
 import { Eye, EyeOff, CalendarDays } from 'lucide-vue-next'
 import { defineRule, useField } from 'vee-validate'
 import { required, email, min } from '@vee-validate/rules'
-type InputType = 'text' | 'email' | 'password' | 'number' | 'date' | 'textarea'
 
-type ValidationRule = (value: string) => boolean | string
-interface Props {
-  name: string
-  label?: string
-  placeholder?: string
-  type?: InputType
-  rows?: number
-  dir?: 'ltr' | 'rtl' | 'auto'
-  class?: string
-  rules?: Record<string, unknown> | ValidationRule
-}
-
-const props = withDefaults(defineProps<Props>(), {
-  type: 'text',
-  rows: 3,
-  class: '',
-  rules: () => ({}),
+const props = defineProps({
+  name: {
+    type: String,
+    required: true,
+  },
+  label: String,
+  placeholder: String,
+  type: {
+    type: String,
+    default: 'text',
+  },
+  rows: {
+    type: Number,
+    default: 3,
+  },
+  dir: {
+    type: String,
+    default: 'auto',
+  },
+  class: {
+    type: String,
+    default: '',
+  },
+  rules: {
+    type: [Object, Function],
+    default: () => ({}),
+  },
 })
 
 const showPassword = ref(false)
-
-
 
 defineRule('required', required)
 defineRule('email', email)
@@ -38,7 +44,7 @@ const validationRules = computed(() => {
     return props.rules
   }
 
-  const rules: Record<string, any> = {}
+  const rules = {}
 
   if (props.rules?.required) {
     rules.required = props.rules.required
@@ -69,6 +75,7 @@ const {
 )
 
 const hasError = computed(() => !!errorMessage.value)
+
 const hasRequired = computed(() => {
   if (typeof props.rules === 'function') {
     return false
@@ -76,6 +83,7 @@ const hasRequired = computed(() => {
 
   return !!props.rules?.required
 })
+
 const inputType = computed(() =>
   props.type === 'password' && showPassword.value
     ? 'text'
@@ -178,7 +186,7 @@ const inputType = computed(() =>
       @input="handleChange"
       @blur="handleBlur"
       :class="[
-        'w-full relative  px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800/50 border rounded-xl text-sm focus:outline-none focus:ring-2 text-slate-900 dark:text-slate-100 transition-all',
+        'w-full relative px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800/50 border rounded-xl text-sm focus:outline-none focus:ring-2 text-slate-900 dark:text-slate-100 transition-all',
         hasError
           ? 'border-rose-500 focus:ring-rose-500/20'
           : 'border-slate-200 dark:border-slate-700 focus:ring-primary/20',

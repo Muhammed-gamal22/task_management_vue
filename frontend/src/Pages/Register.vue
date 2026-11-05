@@ -1,5 +1,4 @@
-
-<script setup lang="ts">
+<script setup>
 import { watch } from 'vue'
 import { useRouter, RouterLink } from 'vue-router'
 import { useForm } from 'vee-validate'
@@ -13,24 +12,15 @@ import { useTokenStore } from '@/store/token-store'
 import CustomInput from '@/components/customs/CustomInput.vue'
 import CustomButton from '@/components/customs/CustomButton.vue'
 
-interface RegisterForm {
-  name: string
-  email: string
-  password: string
-  confirmPassword: string
-}
-
-interface RegisterResponse {
-  token?: string
-}
 const router = useRouter()
 const { setToken } = useTokenStore()
+
 const {
   handleSubmit,
   values,
   isSubmitting,
   validateField,
-} = useForm<RegisterForm>({
+} = useForm({
   initialValues: {
     name: '',
     email: '',
@@ -38,15 +28,18 @@ const {
     confirmPassword: '',
   },
 })
-const validateName = (value: string) => {
+
+const validateName = (value) => {
   if (!value?.trim()) return 'Full name is required'
+
   if (value.trim().length < 2) {
     return 'Name must be at least 2 characters'
   }
+
   return true
 }
 
-const validateEmail = (value: string) => {
+const validateEmail = (value) => {
   if (!value) return 'Email is required'
 
   const emailRegex =
@@ -55,15 +48,17 @@ const validateEmail = (value: string) => {
   return emailRegex.test(value) || 'Please enter a valid email address'
 }
 
-const validatePassword = (value: string) => {
+const validatePassword = (value) => {
   if (!value) return 'Password is required'
+
   if (value.length < 6) {
     return 'Password must be at least 6 characters'
   }
+
   return true
 }
 
-const validateConfirmPassword = (value: string) => {
+const validateConfirmPassword = (value) => {
   if (!value) return 'Please confirm your password'
 
   return (
@@ -71,15 +66,16 @@ const validateConfirmPassword = (value: string) => {
     'Passwords do not match'
   )
 }
+
 watch(
   () => values.password,
   () => {
     validateField('confirmPassword')
   }
 )
+
 const { mutate, isPending } = useMutation({
-  mutationFn: (data: RegisterForm) =>
-    postData<RegisterResponse, RegisterForm>('/auth/register', data),
+  mutationFn: (data) => postData('/auth/register', data),
 
   onSuccess: (response) => {
     if (response?.token) {
@@ -94,7 +90,7 @@ const { mutate, isPending } = useMutation({
     }
   },
 
-  onError: (error: any) => {
+  onError: (error) => {
     toast.error(
       error?.response?.data?.message ||
       error.message ||
@@ -102,6 +98,7 @@ const { mutate, isPending } = useMutation({
     )
   },
 })
+
 const onSubmit = handleSubmit((formData) => {
   mutate(formData)
 })
@@ -162,13 +159,14 @@ const onSubmit = handleSubmit((formData) => {
 
           <CustomButton
             type="submit"
-            :isLoading="isPending || isSubmitting"
+            :is-loading="isPending || isSubmitting"
             :disabled="isPending || isSubmitting"
             class="w-full py-2.5 bg-white hover:bg-primary/90 text-primary-foreground font-semibold flex items-center justify-center gap-2 mt-2"
           >
             <template v-if="isPending || isSubmitting">
               <Loader2 class="w-4 h-4 animate-spin" />
             </template>
+
             <template v-else>
               Sign Up
               <ArrowRight class="w-4 h-4 ml-1" />

@@ -1,28 +1,33 @@
-
-<script setup lang="ts">
+<script setup>
 import { computed } from 'vue'
 import { useField } from 'vee-validate'
 
-interface Option {
-  value: string
-  label: string
-}
-
-interface Props {
-  name: string
-  label?: string
-  placeholder?: string
-  options?: Option[]
-  rules?: Record<string, any>
-  dir?: 'ltr' | 'rtl' | 'auto'
-  class?: string
-}
-
-const props = withDefaults(defineProps<Props>(), {
-  placeholder: 'Select an option',
-  options: () => [],
-  rules: () => ({}),
-  class: '',
+const props = defineProps({
+  name: {
+    type: String,
+    required: true,
+  },
+  label: String,
+  placeholder: {
+    type: String,
+    default: 'Select an option',
+  },
+  options: {
+    type: Array,
+    default: () => [],
+  },
+  rules: {
+    type: Object,
+    default: () => ({}),
+  },
+  dir: {
+    type: String,
+    default: 'auto',
+  },
+  class: {
+    type: String,
+    default: '',
+  },
 })
 
 const validationRules = computed(() => props.rules)
@@ -32,7 +37,7 @@ const {
   errorMessage,
   handleChange,
   handleBlur,
-} = useField<string>(
+} = useField(
   () => props.name,
   validationRules
 )
@@ -42,8 +47,6 @@ const hasRequired = computed(() => !!props.rules.required)
 
 <template>
   <div class="flex flex-col gap-1.5 w-full">
-
-    <!-- Label -->
     <label
       v-if="label || placeholder"
       class="text-xs font-semibold text-slate-700 dark:text-slate-300"
@@ -54,6 +57,7 @@ const hasRequired = computed(() => !!props.rules.required)
         *
       </span>
     </label>
+
     <select
       :value="value || ''"
       @change="handleChange"
@@ -86,6 +90,5 @@ const hasRequired = computed(() => !!props.rules.required)
     >
       {{ errorMessage }}
     </p>
-
   </div>
 </template>

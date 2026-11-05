@@ -1,14 +1,14 @@
-
-<script setup lang="ts">
+<script setup>
 import { Search } from 'lucide-vue-next'
 
-defineProps<{
-  searchQuery: string
-}>()
+defineProps({
+  searchQuery: {
+    type: String,
+    default: '',
+  },
+})
 
-const emit = defineEmits<{
-  'update:searchQuery': [value: string]
-}>()
+const emit = defineEmits(['update:searchQuery'])
 </script>
 
 <template>
@@ -19,7 +19,7 @@ const emit = defineEmits<{
       type="text"
       placeholder="Search tasks..."
       :value="searchQuery"
-      @input="emit('update:searchQuery', ($event.target as HTMLInputElement).value)"
+      @input="emit('update:searchQuery', $event.target.value)"
       class="w-full pl-9 pr-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 text-slate-800 dark:text-slate-200"
     />
   </div>

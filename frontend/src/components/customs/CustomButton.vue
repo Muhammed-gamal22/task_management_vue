@@ -1,23 +1,16 @@
-```vue
-<script setup lang="ts">
+
+<script setup>
 import { Loader2 } from 'lucide-vue-next'
 
-interface Props {
-  isLoading?: boolean
-  disabled?: boolean
-  class?: string
-  icon?: any
-}
 
-const props = withDefaults(defineProps<Props>(), {
+
+const props = withDefaults(defineProps(), {
   isLoading: false,
   disabled: false,
   class: '',
 })
 
-defineSlots<{
-  default(): any
-}>()
+defineSlots()
 </script>
 
 <template>
@@ -31,7 +24,7 @@ defineSlots<{
   >
     <template v-if="props.isLoading">
       <Loader2 class="w-4 h-4 animate-spin" />
-      <slot />
+      <slot/>
     </template>
 
     <template v-else>
@@ -40,8 +33,7 @@ defineSlots<{
         v-if="props.icon"
         class="w-4 h-4"
       />
-      <slot />
+      <slot/>
     </template>
   </button>
 </template>
-```

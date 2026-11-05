@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup>
 import { computed } from 'vue'
 import {
   Calendar,
@@ -12,29 +12,18 @@ import {
 
 import { format, isBefore, startOfDay } from 'date-fns'
 
-type Priority = 'High' | 'Medium' | 'Low'
-type Status = 'Done' | 'In Progress' | 'To Do'
+const props = defineProps({
+  task: {
+    type: Object,
+    required: true,
+  },
+})
 
-interface TaskType {
-  _id: string
-  title: string
-  description?: string
-  status?: Status
-  priority?: Priority
-  due_date?: string
-}
-
-interface Props {
-  task: TaskType
-}
-
-const props = defineProps<Props>()
-
-const emit = defineEmits<{
-  edit: [task: TaskType]
-  delete: [id: string]
-  statusChange: [id: string, status: Status]
-}>()
+const emit = defineEmits([
+  'edit',
+  'delete',
+  'statusChange',
+])
 
 const priorityConfig = {
   High: {
@@ -101,11 +90,8 @@ const isOverdue = computed(() => {
   )
 })
 
-// Event handlers
-const handleStatusChange = (event: Event) => {
-  const target = event.target as HTMLSelectElement
-
-  emit('statusChange', task.value._id, target.value as Status)
+const handleStatusChange = (event) => {
+  emit('statusChange', task.value._id, event.target.value)
 }
 
 const handleEdit = () => {
@@ -146,6 +132,7 @@ const handleDelete = () => {
               ]"
             />
           </div>
+
           <span
             :class="[
               'inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-0.5 rounded-full border',
@@ -160,6 +147,7 @@ const handleDelete = () => {
             />
             {{ priority }}
           </span>
+
           <span
             v-if="isOverdue"
             class="inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full bg-rose-50 text-rose-600 dark:bg-rose-950/40 dark:text-rose-400 border border-rose-200 dark:border-rose-800"
@@ -167,8 +155,8 @@ const handleDelete = () => {
             <AlertCircle class="w-3 h-3" />
             Overdue
           </span>
-
         </div>
+
         <h3
           :class="[
             'text-base font-semibold text-slate-800 dark:text-slate-100 group-hover:text-primary transition-colors',
@@ -179,6 +167,7 @@ const handleDelete = () => {
         >
           {{ task.title }}
         </h3>
+
         <p
           v-if="task.description"
           class="text-sm text-slate-600 dark:text-slate-400 line-clamp-2 leading-relaxed"
@@ -202,7 +191,6 @@ const handleDelete = () => {
             </span>
           </div>
         </div>
-
       </div>
 
       <div
@@ -224,7 +212,6 @@ const handleDelete = () => {
           <Trash2 class="w-4 h-4" />
         </button>
       </div>
-
     </div>
   </div>
 </template>

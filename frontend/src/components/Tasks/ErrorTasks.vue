@@ -1,19 +1,12 @@
-
-<script setup lang="ts">
+<script setup>
 import { AlertCircle } from 'lucide-vue-next'
 
-interface Props {
-  error?: {
-    response?: {
-      data?: {
-        message?: string
-      }
-    }
-    message?: string
-  } | null
-}
-
-const props = defineProps<Props>()
+const props = defineProps({
+  error: {
+    type: Object,
+    default: null,
+  },
+})
 </script>
 
 <template>

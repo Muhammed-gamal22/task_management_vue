@@ -1,14 +1,14 @@
-
-<script setup lang="ts">
+<script setup>
 import { Filter } from 'lucide-vue-next'
 
-defineProps<{
-  priorityFilter: string
-}>()
+defineProps({
+  priorityFilter: {
+    type: String,
+    default: 'All',
+  },
+})
 
-const emit = defineEmits<{
-  'update:priorityFilter': [value: string]
-}>()
+const emit = defineEmits(['update:priorityFilter'])
 
 const priorities = [
   { value: 'All', label: 'All Priorities' },
@@ -24,7 +24,7 @@ const priorities = [
 
     <select
       :value="priorityFilter"
-      @change="emit('update:priorityFilter', ($event.target as HTMLSelectElement).value)"
+      @change="emit('update:priorityFilter', $event.target.value)"
       class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-medium rounded-xl px-3 py-2 text-slate-700 dark:text-slate-200 focus:outline-none min-w-[120px]"
     >
       <option

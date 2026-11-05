@@ -1,12 +1,12 @@
+<script setup>
+const props = defineProps({
+  statusFilter: {
+    type: String,
+    default: 'All',
+  },
+})
 
-<script setup lang="ts">
-const props = defineProps<{
-  statusFilter: string
-}>()
-
-const emit = defineEmits<{
-  'update:statusFilter': [value: string]
-}>()
+const emit = defineEmits(['update:statusFilter'])
 
 const statuses = ['All', 'To Do', 'In Progress', 'Done']
 </script>

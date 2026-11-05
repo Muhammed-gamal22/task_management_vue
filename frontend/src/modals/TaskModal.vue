@@ -1,5 +1,4 @@
-
-<script setup lang="ts">
+<script setup>
 import { computed, watch } from 'vue'
 import { useForm } from 'vee-validate'
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
@@ -7,42 +6,25 @@ import { Loader2, X } from 'lucide-vue-next'
 import { toast } from 'vue-sonner'
 
 import { useTaskStore } from '@/store/modals-store'
-import { postData, patchData } from '@/services/services.ts'
+import { postData, patchData } from '@/services/services'
 
 import CustomButton from '@/components/customs/CustomButton.vue'
 import CustomInput from '@/components/customs/CustomInput.vue'
 import SelectBox from '@/components/customs/SelectBox.vue'
 
-interface Task {
-  _id: string
-  title: string
-  description?: string
-  status: 'To Do' | 'In Progress' | 'Done'
-  priority: 'Low' | 'Medium' | 'High'
-  due_date?: string
-}
+const props = defineProps({
+  editingTask: {
+    type: Object,
+    default: null,
+  },
+})
 
-interface TaskFormData {
-  title: string
-  description: string
-  status: Task['status']
-  priority: Task['priority']
-  due_date: string
-}
-
-interface Props {
-  editingTask: Task | null
-}
-
-const props = defineProps<Props>()
-
-const emit = defineEmits<{
-  'update:editingTask': [task: Task | null]
-}>()
+const emit = defineEmits(['update:editingTask'])
 
 const taskStore = useTaskStore()
 const queryClient = useQueryClient()
-const { handleSubmit, resetForm } = useForm<TaskFormData>({
+
+const { handleSubmit, resetForm } = useForm({
   initialValues: {
     title: '',
     description: '',
@@ -52,7 +34,7 @@ const { handleSubmit, resetForm } = useForm<TaskFormData>({
   },
 })
 
-const validateDueDate = (value: string) => {
+const validateDueDate = (value) => {
   if (!value) {
     return 'Due date is required'
   }
@@ -68,6 +50,7 @@ const validateDueDate = (value: string) => {
 
   return true
 }
+
 watch(
   () => props.editingTask,
   (task) => {
@@ -91,8 +74,7 @@ const closeModal = () => {
 }
 
 const createMutation = useMutation({
-  mutationFn: (newTask: TaskFormData) =>
-    postData('/tasks', newTask),
+  mutationFn: (newTask) => postData('/tasks', newTask),
 
   onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: ['tasks'] })
@@ -100,22 +82,16 @@ const createMutation = useMutation({
     closeModal()
   },
 
-  onError: (err: any) => {
+  onError: (err) => {
     toast.error(
       err?.response?.data?.message || 'Failed to create task'
     )
   },
 })
 
-
 const updateMutation = useMutation({
-  mutationFn: ({
-    id,
-    updatedFields,
-  }: {
-    id: string
-    updatedFields: TaskFormData
-  }) => patchData(`/tasks/${id}`, updatedFields),
+  mutationFn: ({ id, updatedFields }) =>
+    patchData(`/tasks/${id}`, updatedFields),
 
   onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: ['tasks'] })
@@ -123,7 +99,7 @@ const updateMutation = useMutation({
     closeModal()
   },
 
-  onError: (err: any) => {
+  onError: (err) => {
     toast.error(
       err?.response?.data?.message || 'Failed to update task'
     )
@@ -135,7 +111,6 @@ const isPending = computed(
     createMutation.isPending.value ||
     updateMutation.isPending.value
 )
-
 
 const onSubmit = handleSubmit((formData) => {
   if (props.editingTask) {
@@ -156,7 +131,7 @@ const onSubmit = handleSubmit((formData) => {
     <div
       class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in-95 duration-200"
     >
-   
+
       <div
         class="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-slate-800"
       >
@@ -227,7 +202,6 @@ const onSubmit = handleSubmit((formData) => {
 
         </div>
 
-       
         <div
           class="flex items-center justify-end gap-3 pt-4 border-t border-slate-100 dark:border-slate-800"
         >

@@ -1,16 +1,22 @@
-
-<script setup lang="ts">
+<script setup>
 import { ListTodo, Plus } from 'lucide-vue-next'
 
-defineProps<{
-  searchQuery: string
-  statusFilter: string
-  priorityFilter: string
-}>()
+defineProps({
+  searchQuery: {
+    type: String,
+    default: '',
+  },
+  statusFilter: {
+    type: String,
+    default: 'All',
+  },
+  priorityFilter: {
+    type: String,
+    default: 'All',
+  },
+})
 
-const emit = defineEmits<{
-  openCreateModal: []
-}>()
+const emit = defineEmits(['openCreateModal'])
 </script>
 
 <template>
