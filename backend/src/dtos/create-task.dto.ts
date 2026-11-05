@@ -1,7 +1,7 @@
 import { IsEnum, IsNotEmpty, IsString, IsDate, Validate } from "class-validator";
-import { Status } from "src/schemas/Task.schema";
-import { Priority } from "src/schemas/Task.schema";
-import { IsFutureOrToday } from "src/validators/date-validator";
+import { Status } from "../schemas/Task.schema";
+import { Priority } from "../schemas/Task.schema";
+import { IsFutureOrToday } from "../validators/date-validator";
 import { Type } from "class-transformer";
 export class createTaskDto {
     @IsString({ message: "Title must be a string" })
